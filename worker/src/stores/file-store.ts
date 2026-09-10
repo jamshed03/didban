@@ -2,7 +2,7 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { describeError } from '../helpers/index.ts'
 import type { Snapshot, SnapshotInput, SnapshotStore } from '../types/index.ts'
-import { screenshotRelPath, snapshotPath, SNAPSHOT_SCHEMA_VERSION } from './paths.ts'
+import { diffImageRelPath, screenshotRelPath, snapshotPath, SNAPSHOT_SCHEMA_VERSION } from './paths.ts'
 
 /**
  * Snapshot-Ablage in lokalen Dateien (JSON + PNG) unter DATA_DIR.
@@ -51,6 +51,12 @@ export class FileSnapshotStore implements SnapshotStore {
         await writeAtomic(snapshotPath(this.dataDir, input.url), JSON.stringify({ schemaVersion: SNAPSHOT_SCHEMA_VERSION, ...snapshot }, null, 2))
 
         return snapshot
+    }
+
+    async saveDiffImage(runId: string, url: string, image: Uint8Array): Promise<string> {
+        const relPath = diffImageRelPath(runId, url)
+        await writeAtomic(join(this.dataDir, relPath), image)
+        return relPath
     }
 }
 

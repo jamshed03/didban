@@ -26,6 +26,28 @@ export function parseCli(argv: readonly string[]): CliOptions {
     }
 }
 
+export function parseUnitInterval(raw: string | undefined, fallback: number, name: string): number {
+    const value = raw?.trim()
+    if (!value) return fallback
+
+    const parsed = Number(value)
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 1) {
+        throw new ConfigError(`${name} muss zwischen 0 und 1 liegen, war "${value}".`)
+    }
+    return parsed
+}
+
+export function parsePercent(raw: string | undefined, fallback: number, name: string): number {
+    const value = raw?.trim()
+    if (!value) return fallback
+
+    const parsed = Number(value)
+    if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) {
+        throw new ConfigError(`${name} muss zwischen 0 und 100 liegen, war "${value}".`)
+    }
+    return parsed
+}
+
 export function parsePositiveInt(raw: string | undefined, fallback: number, name: string): number {
     const value = raw?.trim()
     if (!value) return fallback

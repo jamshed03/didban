@@ -21,4 +21,5 @@ export interface SnapshotStore {
     readLatest(url: string): Promise<Snapshot | undefined>
     readScreenshot(snapshot: Snapshot): Promise<Uint8Array | undefined>
     save(runId: string, input: SnapshotInput): Promise<Snapshot>
+    saveDiffImage(runId: string, url: string, image: Uint8Array): Promise<string>
 }

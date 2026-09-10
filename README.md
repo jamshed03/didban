@@ -90,7 +90,12 @@ funktionierendes CLI-Tool mit Report — ganz ohne Frontend oder Backend.
       "crawlDelayMs": 500,
       "fetchTimeoutMs": 30000,
       "userAgent": "Didban/0.1 (+Website-Monitoring)",
-      "maxSitemapIndexDepth": 3
+      "maxSitemapIndexDepth": 3,
+      "pageTimeoutMs": 30000,
+      "viewportWidth": 1280,
+      "viewportHeight": 800,
+      "pixelThreshold": 0.1,
+      "minPixelDiffPercent": 0.01
   }
   ```
 

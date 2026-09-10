@@ -1,13 +1,13 @@
 import type { Config } from '../types/index.ts'
 import { BUILTIN_DEFAULTS } from './defaults.ts'
 import { loadFileConfig } from './file.ts'
-import { parseCli, parsePositiveInt } from './parser.ts'
+import { parseCli, parsePercent, parsePositiveInt, parseUnitInterval } from './parser.ts'
 import { resolveSource } from './source.ts'
 
 export { BUILTIN_DEFAULTS, CONFIG_FILENAME } from './defaults.ts'
 export { ConfigError } from './errors.ts'
 export { loadFileConfig } from './file.ts'
-export { parseCli, parsePositiveInt } from './parser.ts'
+export { parseCli, parsePercent, parsePositiveInt, parseUnitInterval } from './parser.ts'
 export { KNOWN_KEYS, validateFileConfig } from './validator.ts'
 export { resolveSource } from './source.ts'
 
@@ -40,6 +40,25 @@ export function loadConfig(argv: readonly string[] = process.argv.slice(2)): Con
         'MAX_SITEMAP_INDEX_DEPTH',
     )
 
+    const crawl = {
+        pageTimeoutMs: parsePositiveInt(
+            env.PAGE_TIMEOUT_MS,
+            file.pageTimeoutMs ?? BUILTIN_DEFAULTS.pageTimeoutMs,
+            'PAGE_TIMEOUT_MS',
+        ),
+        viewportWidth: parsePositiveInt(
+            env.VIEWPORT_WIDTH,
+            file.viewportWidth ?? BUILTIN_DEFAULTS.viewportWidth,
+            'VIEWPORT_WIDTH',
+        ),
+        viewportHeight: parsePositiveInt(
+            env.VIEWPORT_HEIGHT,
+            file.viewportHeight ?? BUILTIN_DEFAULTS.viewportHeight,
+            'VIEWPORT_HEIGHT',
+        ),
+        userAgent: http.userAgent,
+    }
+
     return {
         source: resolveSource(cli, env, { http, maxSitemapIndexDepth }),
         dataDir: env.DATA_DIR?.trim() || file.dataDir || BUILTIN_DEFAULTS.dataDir,
@@ -50,5 +69,16 @@ export function loadConfig(argv: readonly string[] = process.argv.slice(2)): Con
         ),
         http,
         maxSitemapIndexDepth,
+        crawl,
+        pixelThreshold: parseUnitInterval(
+            env.PIXEL_THRESHOLD,
+            file.pixelThreshold ?? BUILTIN_DEFAULTS.pixelThreshold,
+            'PIXEL_THRESHOLD',
+        ),
+        minPixelDiffPercent: parsePercent(
+            env.MIN_PIXEL_DIFF_PERCENT,
+            file.minPixelDiffPercent ?? BUILTIN_DEFAULTS.minPixelDiffPercent,
+            'MIN_PIXEL_DIFF_PERCENT',
+        ),
     }
 }

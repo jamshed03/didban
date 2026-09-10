@@ -1,7 +1,7 @@
 import type { FileConfig } from '../types/index.ts'
 import { ConfigError } from './errors.ts'
 
-export const KNOWN_KEYS = ['dataDir', 'crawlDelayMs', 'fetchTimeoutMs', 'userAgent', 'maxSitemapIndexDepth'] as const
+export const KNOWN_KEYS = ['dataDir', 'crawlDelayMs', 'fetchTimeoutMs', 'userAgent', 'maxSitemapIndexDepth', 'pageTimeoutMs', 'viewportWidth', 'viewportHeight', 'pixelThreshold', 'minPixelDiffPercent'] as const
 
 type KnownKey = (typeof KNOWN_KEYS)[number]
 
@@ -17,6 +17,11 @@ export function validateFileConfig(parsed: unknown, path: string): FileConfig {
         fetchTimeoutMs?: number
         userAgent?: string
         maxSitemapIndexDepth?: number
+        pageTimeoutMs?: number
+        viewportWidth?: number
+        viewportHeight?: number
+        pixelThreshold?: number
+        minPixelDiffPercent?: number
     } = {}
 
     rejectUnknownKeys(input, path)
@@ -49,6 +54,33 @@ export function validateFileConfig(parsed: unknown, path: string): FileConfig {
         config.maxSitemapIndexDepth = depth
     }
 
+    if (input.pageTimeoutMs !== undefined) {
+        config.pageTimeoutMs = requirePositiveInt(input.pageTimeoutMs, 'pageTimeoutMs', path)
+    }
+
+    if (input.viewportWidth !== undefined) {
+        config.viewportWidth = requirePositiveInt(input.viewportWidth, 'viewportWidth', path)
+    }
+
+    if (input.viewportHeight !== undefined) {
+        config.viewportHeight = requirePositiveInt(input.viewportHeight, 'viewportHeight', path)
+    }
+
+    if (input.pixelThreshold !== undefined) {
+        if (typeof input.pixelThreshold !== 'number' || !Number.isFinite(input.pixelThreshold) || input.pixelThreshold < 0 || input.pixelThreshold > 1) {
+            throw new ConfigError(`${path}: "pixelThreshold" muss zwischen 0 und 1 liegen.`)
+        }
+        config.pixelThreshold = input.pixelThreshold
+    }
+
+    if (input.minPixelDiffPercent !== undefined) {
+        const value = input.minPixelDiffPercent
+        if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 100) {
+            throw new ConfigError(`${path}: "minPixelDiffPercent" muss zwischen 0 und 100 liegen.`)
+        }
+        config.minPixelDiffPercent = value
+    }
+
     return config
 }
 
@@ -67,6 +99,14 @@ function requireNonEmptyString(value: unknown, field: string, path: string): str
         throw new ConfigError(`${path}: "${field}" muss ein nicht-leerer Text sein.`)
     }
     return value.trim()
+}
+
+function requirePositiveInt(value: unknown, field: string, path: string): number {
+    const parsed = requireNonNegativeInt(value, field, path)
+    if (parsed === 0) {
+        throw new ConfigError(`${path}: "${field}" muss größer als 0 sein.`)
+    }
+    return parsed
 }
 
 function requireNonNegativeInt(value: unknown, field: string, path: string): number {

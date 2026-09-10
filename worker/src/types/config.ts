@@ -1,5 +1,6 @@
 /** Didban — Typen der Lauf-Konfiguration. */
 
+import type { CrawlOptions } from './crawl.ts'
 import type { UrlSource } from './source.ts'
 
 export interface Config {
@@ -8,6 +9,9 @@ export interface Config {
     readonly crawlDelayMs: number
     readonly http: HttpOptions
     readonly maxSitemapIndexDepth: number
+    readonly crawl: CrawlOptions
+    readonly pixelThreshold: number
+    readonly minPixelDiffPercent: number
 }
 
 export interface FileConfig {
@@ -16,6 +20,11 @@ export interface FileConfig {
     readonly fetchTimeoutMs?: number
     readonly userAgent?: string
     readonly maxSitemapIndexDepth?: number
+    readonly pageTimeoutMs?: number
+    readonly viewportWidth?: number
+    readonly viewportHeight?: number
+    readonly pixelThreshold?: number
+    readonly minPixelDiffPercent?: number
 }
 
 export interface HttpOptions {
