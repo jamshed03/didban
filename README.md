@@ -8,7 +8,10 @@ von Hand durchzuklicken.
 
 ## Idee
 
-1. URLs werden aus der Sitemap der Zielseite ermittelt.
+1. Die zu prüfenden URLs kommen wahlweise aus der Sitemap der Zielseite
+   (Sitemap-Indizes werden aufgelöst) oder aus einer manuell gepflegten
+   Liste — nützlich, wenn es keine Sitemap gibt oder nur einzelne Seiten
+   interessieren.
 2. Jede URL wird per Playwright aufgerufen: Hauptinhalt (Text/DOM) wird
    extrahiert, zusätzlich wird ein Full-Page-Screenshot gemacht.
 3. Text und Screenshot werden mit dem zuletzt gespeicherten Snapshot
@@ -44,7 +47,9 @@ funktionierendes CLI-Tool mit Report — ganz ohne Frontend oder Backend.
 
 ### Was Phase 1 konkret enthält
 
-- Sitemap-Crawler via **Playwright** (Text/DOM + Full-Page-Screenshot)
+- Zwei URL-Quellen hinter dem Interface `UrlSource`: **Sitemap** oder
+  **manuelle Liste**
+- Crawler via **Playwright** (Text/DOM + Full-Page-Screenshot)
 - Text-Diff via **`diff`**
 - Visueller Diff via **`pixelmatch`** + **`pngjs`**
 - **`SnapshotStore`**-Interface mit lokaler Datei-Implementierung (JSON + PNG)
@@ -55,9 +60,45 @@ funktionierendes CLI-Tool mit Report — ganz ohne Frontend oder Backend.
 
 - **Scope**: eine Website, nur öffentlich erreichbare Seiten (kein
   Login/Admin-Bereich).
-- **URL-Quelle**: Sitemap der Zielseite (`SITE_SITEMAP_URL`).
+- **URL-Quelle** (`URL_SOURCE`): entweder `sitemap` oder `manual`.
+
+  ```bash
+  # Option A — Sitemap (inkl. Sitemap-Index)
+  URL_SOURCE=sitemap
+  SITE_SITEMAP_URL=https://example.com/sitemap.xml
+
+  # Option B — manuelle Liste: eine URL pro Zeile, "#" ist ein Kommentar
+  URL_SOURCE=manual
+  SITE_URLS_FILE=./urls.txt          # Vorlage: worker/urls.sample.txt
+  # oder direkt:  SITE_URLS=https://example.com/,https://example.com/kontakt
+  ```
+
+  Für einen einzelnen Lauf gehen auch CLI-Argumente vor, ohne die `.env` zu
+  ändern:
+
+  ```bash
+  docker compose run worker npm run check -- --sitemap https://example.com/sitemap.xml
+  docker compose run worker npm run check -- --urls-file ./urls.txt
+  docker compose run worker npm run check -- --urls https://example.com/a,https://example.com/b
+  ```
+- **Projekt-Konfiguration**: `worker/didban.config.json` — hier stehen die
+  Vorgaben, die für alle gelten und im Repo versioniert sind:
+
+  ```json
+  {
+      "dataDir": "./data",
+      "crawlDelayMs": 500,
+      "fetchTimeoutMs": 30000,
+      "userAgent": "Didban/0.1 (+Website-Monitoring)",
+      "maxSitemapIndexDepth": 3
+  }
+  ```
+
+  Vorrang, von stark nach schwach: CLI-Argument → `.env` → diese Datei →
+  eingebauter Default. Eine andere Datei nutzen: `--config <pfad>` oder
+  `DIDBAN_CONFIG=<pfad>`.
 - **Rate-Limiting**: ca. 500 ms Pause zwischen den Requests
-  (`CRAWL_DELAY_MS`).
+  (`crawlDelayMs`, per Env `CRAWL_DELAY_MS`).
 - **Crawl-Zeitpunkt** (ab Phase 4): einmal nachts, ca. 02:00 Uhr.
 - **Paketmanager**: npm.
 

@@ -1,0 +1,10 @@
+{
+    "//": "Didban — Projekt-Konfiguration. Wird versioniert und gilt für alle.",
+
+    "dataDir": "./data",
+    "crawlDelayMs": 500,
+    "fetchTimeoutMs": 30000,
+    "userAgent": "Didban/0.1 (+Website-Monitoring)",
+
+    "maxSitemapIndexDepth": 3
+}

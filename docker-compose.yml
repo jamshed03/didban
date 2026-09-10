@@ -1,0 +1,52 @@
+# ---------------------------------------------------------------------------
+# Didban (دیدبان — "der Ausschau hält") — docker-compose Grundgerüst
+# ---------------------------------------------------------------------------
+
+services:
+    worker:
+        build:
+            context: ./worker
+            dockerfile: Dockerfile
+        env_file:
+            - .env
+        volumes:
+            - ./worker:/app
+            - /app/node_modules
+            - ./data:/app/data
+        command: npm run check
+
+    # --- Phase 2: Vite-Dashboard (liest den JSON-Report aus Phase 1) --------
+    # frontend:
+    #   build:
+    #     context: ./frontend
+    #     dockerfile: Dockerfile
+    #   ports:
+    #     - "5173:5173"
+    #   volumes:
+    #     - ./frontend:/app
+    #     - ./data:/app/data:ro     # Read-only Zugriff auf JSON-Reports/Screenshots
+    #   depends_on:
+    #     - worker
+
+    # --- Phase 3: Laravel-Backend (optional, nur bei Bedarf für Auth/Multi-User) ---
+    # backend:
+    #   build:
+    #     context: ./backend
+    #     dockerfile: Dockerfile
+    #   ports:
+    #     - "8000:8000"
+    #   env_file:
+    #     - .env
+    #   depends_on:
+    #     - db
+
+    # db:
+    #   image: postgres:16-alpine
+    #   environment:
+    #     POSTGRES_DB: ${DB_DATABASE:-cms_monitor}
+    #     POSTGRES_USER: ${DB_USERNAME:-cms_monitor}
+    #     POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    #   volumes:
+    #     - db_data:/var/lib/postgresql/data
+# volumes:
+#   db_data:

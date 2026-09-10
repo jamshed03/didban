@@ -8,15 +8,15 @@ build/
 *.tsbuildinfo
 npm-debug.log*
 
-# Snapshot-/Report-Daten (lokale Storage-Implementierung, Phase 1)
+# Snapshot-/Report-Daten
 data/
 !data/.gitkeep
 
-# Frontend (Phase 2)
+# Frontend
 frontend/dist/
 frontend/node_modules/
 
-# Backend / Laravel (Phase 3)
+# Backend / Laravel
 backend/vendor/
 backend/node_modules/
 backend/.env
@@ -27,3 +27,6 @@ backend/storage/*.key
 Thumbs.db
 .vscode/
 .idea/
+
+# Manuell gepflegte URL-Liste
+worker/urls.txt

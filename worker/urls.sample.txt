@@ -1,0 +1,8 @@
+# Didban — manuell gepflegte URL-Liste (URL_SOURCE=manual)
+#
+# Eine URL pro Zeile. Leerzeilen und Zeilen mit "#" werden ignoriert.
+# Nutzung: SITE_URLS_FILE=./urls.txt  oder  --urls-file ./urls.txt
+# Diese Datei kopieren:  cp urls.sample.txt urls.txt
+
+https://example.com/
+https://example.com/kontakt
