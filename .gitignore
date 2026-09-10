@@ -1,0 +1,29 @@
+# Env
+.env
+
+# Node
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+npm-debug.log*
+
+# Snapshot-/Report-Daten (lokale Storage-Implementierung, Phase 1)
+data/
+!data/.gitkeep
+
+# Frontend (Phase 2)
+frontend/dist/
+frontend/node_modules/
+
+# Backend / Laravel (Phase 3)
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/storage/*.key
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
