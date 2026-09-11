@@ -30,3 +30,6 @@ Thumbs.db
 
 # Manuell gepflegte URL-Liste
 worker/urls.txt
+
+worker/projects/*
+!worker/projects/README.md

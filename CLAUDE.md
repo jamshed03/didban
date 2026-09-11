@@ -59,9 +59,19 @@ Der Crawl-/Diff-Kern ist ein **framework-agnostisches TypeScript-Paket** unter
 
 ### Aktueller Stand (Phase 1 abgeschlossen)
 
-Ein Lauf (`docker compose run --rm worker npm run check`) ermittelt die URLs,
-ruft jede Seite mit Playwright ab, vergleicht gegen den letzten Snapshot und
-schreibt Report als JSON und HTML nach `data/runs/<runId>/`.
+Ein Lauf (`docker compose run --rm worker npm run check`) prüft **alle Projekte
+aus `worker/projects/` nacheinander** — nie parallel, der Zielserver und der
+eigene Rechner sollen nicht überlastet werden. `--project <name>` schränkt auf
+eines ein. Je Projekt: URLs ermitteln, Seiten mit Playwright abrufen, gegen den
+letzten Snapshot vergleichen, Report als JSON und HTML nach
+`data/<projekt>/runs/<runId>/` schreiben.
+
+Ein Projekt ist eine JSON-Datei in `worker/projects/`; der Dateiname ist die
+Kennung und der Ordnername in DATA_DIR. Vorrang der Konfiguration:
+CLI → Umgebung → Projektdatei → `didban.config.json` → eingebaute Defaults.
+
+`--urls` / `--sitemap` / `--urls-file` erzeugen einen Ad-hoc-Lauf ohne Projekt;
+gibt es gar keine Projektdateien, gilt weiterhin die Quelle aus der Umgebung.
 
 Beim Weiterarbeiten beachten:
 
@@ -72,7 +82,11 @@ Beim Weiterarbeiten beachten:
 -   Der Pixelvergleich füllt unterschiedlich hohe Bilder weiß auf die gemeinsame
     Größe auf; eine geänderte Seitenhöhe gilt immer als Änderung.
 -   Alles, was aus der geprüften Seite stammt (Text, URLs, Fehlermeldungen), muss
-    im HTML-Report durch `escapeHtml()` — es sind fremde Eingaben.
+    im HTML-Report durch `escapeHtml()` — es sind fremde Eingaben. In den
+    Vorlagen erledigt das `{{name}}` automatisch; `{{{name}}}` ist nur für
+    bereits erzeugtes HTML.
+-   `notify` in einer Projektdatei wird gespeichert und angezeigt, aber **nicht
+    verschickt** — der Versand gehört zu Phase 4.
 
 ## Konventionen
 

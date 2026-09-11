@@ -5,13 +5,14 @@ import { ConfigError } from './errors.ts'
 
 const CLI_OPTIONS = {
     config: { type: 'string' },
+    project: { type: 'string' },
     source: { type: 'string' },
     sitemap: { type: 'string' },
     urls: { type: 'string' },
     'urls-file': { type: 'string' },
 } as const
 
-const CLI_USAGE = 'Erlaubt sind: --config <pfad>, --source <sitemap|manual>, --sitemap <url>, ' + '--urls <a,b>, --urls-file <pfad>.'
+const CLI_USAGE = 'Erlaubt sind: --project <name>, --config <pfad>, --source <sitemap|manual>, ' + '--sitemap <url>, --urls <a,b>, --urls-file <pfad>.'
 
 export function parseCli(argv: readonly string[]): CliOptions {
     try {

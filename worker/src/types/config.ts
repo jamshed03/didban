@@ -39,6 +39,7 @@ export interface SourceOptions {
 
 export interface CliOptions {
     readonly config?: string | undefined
+    readonly project?: string | undefined
     readonly source?: string | undefined
     readonly sitemap?: string | undefined
     readonly urls?: string | undefined

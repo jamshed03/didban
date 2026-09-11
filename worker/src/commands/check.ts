@@ -1,20 +1,33 @@
 /**
- * Command `check` — ein vollständiger Prüflauf.
+ * Command `check` — prüft ein Projekt oder alle nacheinander.
  */
 
-import { loadConfig } from '../configs/index.ts'
+import { loadRunTargets, type RunTarget } from '../configs/index.ts'
 import { PageCrawler } from '../crawler/index.ts'
 import { comparePage } from '../diff/index.ts'
 import { buildReport, writeHtmlReport, writeJsonReport } from '../reports/index.ts'
 import { collectFrom } from '../sources/index.ts'
 import { createRunId, FileSnapshotStore } from '../stores/index.ts'
-import type { Config, PageResult, ReportSummary, SnapshotStore } from '../types/index.ts'
+import type { Config, PageResult, Project, ReportSummary, SnapshotStore } from '../types/index.ts'
 
 export async function runCheck(argv?: readonly string[]): Promise<void> {
-    const config = loadConfig(argv)
+    const targets = loadRunTargets(argv)
+
+    if (targets.length > 1) {
+        const namen = targets.map((target) => target.project?.id ?? 'ad-hoc').join(', ')
+        console.log(`${targets.length} Projekte: ${namen}\n`)
+    }
+
+    for (const target of targets) {
+        await runTarget(target)
+    }
+}
+
+async function runTarget(target: RunTarget): Promise<void> {
+    const { config, project } = target
     const runId = createRunId()
 
-    console.log(`Lauf ${runId}`)
+    console.log(project === undefined ? `Lauf ${runId}` : `Projekt ${project.name} — Lauf ${runId}`)
     console.log(`URL-Quelle: ${config.source.type} (${config.source.origin})`)
 
     const startedAt = new Date().toISOString()
@@ -33,6 +46,7 @@ export async function runCheck(argv?: readonly string[]): Promise<void> {
 
     const report = buildReport({
         runId,
+        project: toReportProject(project),
         source: info,
         startedAt,
         finishedAt: new Date().toISOString(),
@@ -45,6 +59,16 @@ export async function runCheck(argv?: readonly string[]): Promise<void> {
     printSummary(report.summary)
     console.log(`\nReport: ${htmlPath}`)
     console.log(`        ${jsonPath}`)
+
+    if (project !== undefined && project.notify.length > 0) {
+        console.log(`Zu benachrichtigen: ${project.notify.join(', ')} (Versand noch nicht aktiv)`)
+    }
+    console.log('')
+}
+
+function toReportProject(project: Project | undefined) {
+    if (project === undefined) return undefined
+    return { id: project.id, name: project.name, notify: project.notify }
 }
 
 interface Context {
@@ -119,10 +143,7 @@ function printResult(result: PageResult): void {
 }
 
 function printSummary(summary: ReportSummary): void {
-    console.log(
-        `\n${summary.total} geprüft: ${summary.new} neu, ${summary.changed} geändert, ` +
-            `${summary.unchanged} unverändert, ${summary.broken} defekt`,
-    )
+    console.log(`\n${summary.total} geprüft: ${summary.new} neu, ${summary.changed} geändert, ` + `${summary.unchanged} unverändert, ${summary.broken} defekt`)
 }
 
 function sleep(ms: number): Promise<void> {

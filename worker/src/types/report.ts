@@ -40,9 +40,16 @@ export interface ReportSummary {
     readonly broken: number
 }
 
+export interface ReportProject {
+    readonly id: string
+    readonly name: string
+    readonly notify: readonly string[]
+}
+
 export interface Report {
     readonly schemaVersion: 1
     readonly runId: string
+    readonly project?: ReportProject
     readonly source: UrlSourceInfo
     readonly startedAt: string
     readonly finishedAt: string

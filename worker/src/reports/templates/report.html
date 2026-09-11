@@ -3,15 +3,16 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Didban — Lauf {{runId}}</title>
+        <title>Didban — {{title}}</title>
         <style>
             {{{styles}}}
         </style>
     </head>
     <body>
         <header>
-            <h1>Didban</h1>
+            <h1>{{title}}</h1>
             <p class="meta">Lauf vom {{startedAt}} &middot; Quelle: {{sourceType}} ({{sourceOrigin}})</p>
+            {{{notify}}}
             <ul class="summary">
                 <li class="s-total">
                     <strong>{{total}}</strong>
@@ -41,6 +42,9 @@
 </html>
 
 <!-- Bausteine der Seite. Sie werden beim Erzeugen herausgelöst. -->
+<template id="notify">
+    <p class="meta">Benachrichtigung an {{recipients}} — Versand ab Phase 4</p>
+</template>
 
 <template id="result">
     <section class="result {{statusClass}}">

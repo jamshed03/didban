@@ -22,6 +22,8 @@ export function renderReport(report: Report): string {
     const { summary } = report
 
     return fillTemplate(reportTemplate().page, {
+        title: report.project?.name ?? 'Didban',
+        notify: renderNotify(report),
         runId: report.runId,
         startedAt: new Date(report.startedAt).toLocaleString('de-DE'),
         sourceType: report.source.type,
@@ -35,6 +37,13 @@ export function renderReport(report: Report): string {
         styles: reportStyles(),
         results: report.results.map((result) => renderResult(result)).join('\n'),
     })
+}
+
+function renderNotify(report: Report): string {
+    const recipients = report.project?.notify ?? []
+    if (recipients.length === 0) return ''
+
+    return fillTemplate(reportTemplate().part('notify'), { recipients: recipients.join(', ') })
 }
 
 function renderResult(result: PageResult): string {

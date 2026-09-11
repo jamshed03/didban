@@ -1,9 +1,10 @@
-import type { PageResult, Report, ReportSummary, UrlSourceInfo } from '../types/index.ts'
+import type { PageResult, Report, ReportProject, ReportSummary, UrlSourceInfo } from '../types/index.ts'
 
 const REPORT_SCHEMA_VERSION = 1
 
 export interface BuildReportInput {
     readonly runId: string
+    readonly project: ReportProject | undefined
     readonly source: UrlSourceInfo
     readonly startedAt: string
     readonly finishedAt: string
@@ -14,6 +15,7 @@ export function buildReport(input: BuildReportInput): Report {
     return {
         schemaVersion: REPORT_SCHEMA_VERSION,
         runId: input.runId,
+        ...(input.project !== undefined ? { project: input.project } : {}),
         source: input.source,
         startedAt: input.startedAt,
         finishedAt: input.finishedAt,
