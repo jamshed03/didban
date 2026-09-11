@@ -5,6 +5,7 @@
 import { loadConfig } from '../configs/index.ts'
 import { PageCrawler } from '../crawler/index.ts'
 import { comparePage } from '../diff/index.ts'
+import { buildReport, writeHtmlReport, writeJsonReport } from '../reports/index.ts'
 import { collectFrom } from '../sources/index.ts'
 import { createRunId, FileSnapshotStore } from '../stores/index.ts'
 import type { Config, PageResult, ReportSummary, SnapshotStore } from '../types/index.ts'
@@ -16,7 +17,8 @@ export async function runCheck(argv?: readonly string[]): Promise<void> {
     console.log(`Lauf ${runId}`)
     console.log(`URL-Quelle: ${config.source.type} (${config.source.origin})`)
 
-    const { urls } = await collectFrom(config.source)
+    const startedAt = new Date().toISOString()
+    const { urls, info } = await collectFrom(config.source)
     console.log(`${urls.length} URL(s) zu prüfen\n`)
 
     const store = new FileSnapshotStore(config.dataDir)
@@ -29,9 +31,20 @@ export async function runCheck(argv?: readonly string[]): Promise<void> {
         await crawler.close()
     }
 
-    printSummary(results)
-    console.log(`\nSnapshots und Diff-Bilder liegen in ${config.dataDir}`)
-    console.log('JSON- und HTML-Report folgen als letzter Schritt.')
+    const report = buildReport({
+        runId,
+        source: info,
+        startedAt,
+        finishedAt: new Date().toISOString(),
+        results,
+    })
+
+    const jsonPath = await writeJsonReport(config.dataDir, report)
+    const htmlPath = await writeHtmlReport(config.dataDir, report)
+
+    printSummary(report.summary)
+    console.log(`\nReport: ${htmlPath}`)
+    console.log(`        ${jsonPath}`)
 }
 
 interface Context {
@@ -105,19 +118,11 @@ function printResult(result: PageResult): void {
     }
 }
 
-function printSummary(results: readonly PageResult[]): void {
-    const summary = summarize(results)
-    console.log(`\n${summary.total} geprüft: ${summary.new} neu, ${summary.changed} geändert, ` + `${summary.unchanged} unverändert, ${summary.broken} defekt`)
-}
-
-export function summarize(results: readonly PageResult[]): ReportSummary {
-    return {
-        total: results.length,
-        new: results.filter((r) => r.status === 'NEW').length,
-        changed: results.filter((r) => r.status === 'CHANGED').length,
-        unchanged: results.filter((r) => r.status === 'UNCHANGED').length,
-        broken: results.filter((r) => r.status === 'BROKEN').length,
-    }
+function printSummary(summary: ReportSummary): void {
+    console.log(
+        `\n${summary.total} geprüft: ${summary.new} neu, ${summary.changed} geändert, ` +
+            `${summary.unchanged} unverändert, ${summary.broken} defekt`,
+    )
 }
 
 function sleep(ms: number): Promise<void> {

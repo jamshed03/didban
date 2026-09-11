@@ -37,8 +37,8 @@ Der Crawl-/Diff-Kern ist ein **framework-agnostisches TypeScript-Paket**:
 | Phase | Inhalt | Status |
 |---|---|---|
 | **0** | Projekt-Setup (dieses Repo, docker-compose-Skelett, Env, README) | ✅ fertig |
-| **1** | Kern-Engine: Crawl + Text-/Pixel-Diff, lokale Snapshot-Storage, JSON+HTML-Report, CLI via Docker | ⬅️ als Nächstes |
-| **2** | Vue-Dashboard (via Vite), liest den JSON-Report aus Phase 1 | optional, nur bei Bedarf |
+| **1** | Kern-Engine: Crawl + Text-/Pixel-Diff, lokale Snapshot-Storage, JSON+HTML-Report, CLI via Docker | ✅ fertig |
+| **2** | Vue-Dashboard (via Vite), liest den JSON-Report aus Phase 1 | ⬅️ optional, als Nächstes |
 | **3** | Laravel-Backend mit Auth + DB-Storage (zweite `SnapshotStore`-Implementierung) | optional, nur bei Bedarf |
 | **4** | Automatisierung (Cron/Scheduler statt manuellem CLI-Start) | später |
 
@@ -116,9 +116,26 @@ cp .env.sample .env
 
 ## Nutzung
 
-Aktuell (Ende Phase 0) gibt es noch keine ausführbare Logik — nur das
-Projektgerüst. Ab Phase 1 läuft ein Prüflauf über:
+Ein Prüflauf:
 
 ```bash
-docker compose run worker npm run check
+docker compose run --rm worker npm run check
 ```
+
+Ergebnis je Lauf unter `data/`:
+
+```
+data/
+  snapshots/<key>.json        letzter Stand je URL (Text + Zeiger aufs Bild)
+  runs/<runId>/<key>.png      Screenshot dieses Laufs
+  runs/<runId>/<key>.diff.png Pixel-Diff, Unterschiede rot markiert
+  runs/<runId>/report.json    maschinenlesbar — der Vertrag für Phase 2/3
+  runs/<runId>/report.html    zum Anschauen im Browser
+```
+
+Die HTML-Datei direkt öffnen, etwa mit
+`open data/runs/<runId>/report.html`.
+
+**Hinweis:** Der Crawl braucht Chromium und läuft deshalb im Container. Lokal
+(`npx tsx src/index.ts`) funktioniert nur die URL-Ermittlung, sofern der
+Browser nicht per `npx playwright install chromium` nachinstalliert wurde.

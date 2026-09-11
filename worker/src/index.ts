@@ -1,8 +1,5 @@
 /**
  * Didban — Entry-Point des Workers (CLI).
- *
- * Hält nur den Einstieg und die Fehlerausgabe; der eigentliche Ablauf liegt
- * in commands/.
  */
 
 import { runCheck } from './commands/index.ts'

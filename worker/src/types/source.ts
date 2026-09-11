@@ -6,11 +6,8 @@ export interface UrlSourceInfo {
     readonly urlCount: number
 }
 
-/** Was eine Quelle nach dem Einsammeln liefert. */
 export interface CollectedUrls {
-    /** Die gefundenen URLs, normalisiert und dedupliziert. */
     readonly urls: string[]
-    /** Beschreibung der Quelle für den Report. */
     readonly info: UrlSourceInfo
 }
 

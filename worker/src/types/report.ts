@@ -32,7 +32,6 @@ export interface PageResult {
     readonly durationMs: number
 }
 
-/** Zählung je Status über den gesamten Lauf. */
 export interface ReportSummary {
     readonly total: number
     readonly new: number
@@ -41,7 +40,6 @@ export interface ReportSummary {
     readonly broken: number
 }
 
-/** Ergebnis eines vollständigen Prüflaufs — der Report. */
 export interface Report {
     readonly schemaVersion: 1
     readonly runId: string

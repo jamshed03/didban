@@ -39,8 +39,8 @@ Der Crawl-/Diff-Kern ist ein **framework-agnostisches TypeScript-Paket** unter
 | Phase | Inhalt                                                                 | Status                   |
 | ----- | ---------------------------------------------------------------------- | ------------------------ |
 | **0** | Projekt-Setup: Repo, docker-compose-Skelett, Env, README               | ✅ fertig                |
-| **1** | Node/TS-Kern (siehe unten)                                             | ⬅️ als Nächstes          |
-| **2** | Vite + Vue Dashboard, liest den JSON-Report aus Phase 1                | optional, nur bei Bedarf |
+| **1** | Node/TS-Kern (siehe unten)                                             | ✅ fertig                |
+| **2** | Vite + Vue Dashboard, liest den JSON-Report aus Phase 1                | ⬅️ optional, als Nächstes |
 | **3** | Laravel-Backend mit Auth + DB (zweite `SnapshotStore`-Implementierung) | optional, nur bei Bedarf |
 | **4** | Automatisierung: Cron/Scheduler statt manuellem CLI-Start              | später                   |
 
@@ -56,6 +56,23 @@ Der Crawl-/Diff-Kern ist ein **framework-agnostisches TypeScript-Paket** unter
 -   **JSON- und HTML-Report** je Lauf; Status je URL: `NEW` / `CHANGED` /
     `UNCHANGED` / `BROKEN`, dazu Text-Diff, %-Pixel-Diff und Screenshot-Pfade
 -   CLI-Aufruf: `docker compose run worker npm run check`
+
+### Aktueller Stand (Phase 1 abgeschlossen)
+
+Ein Lauf (`docker compose run --rm worker npm run check`) ermittelt die URLs,
+ruft jede Seite mit Playwright ab, vergleicht gegen den letzten Snapshot und
+schreibt Report als JSON und HTML nach `data/runs/<runId>/`.
+
+Beim Weiterarbeiten beachten:
+
+-   Der Crawl braucht Chromium und läuft nur im Container. Lokal funktioniert
+    ohne `npx playwright install chromium` nur die URL-Ermittlung.
+-   Screenshots werden mit `animations: 'disabled'` aufgenommen. Ohne das melden
+    animierte Seiten bei jedem Lauf Unterschiede, die niemand geändert hat.
+-   Der Pixelvergleich füllt unterschiedlich hohe Bilder weiß auf die gemeinsame
+    Größe auf; eine geänderte Seitenhöhe gilt immer als Änderung.
+-   Alles, was aus der geprüften Seite stammt (Text, URLs, Fehlermeldungen), muss
+    im HTML-Report durch `escapeHtml()` — es sind fremde Eingaben.
 
 ## Konventionen
 
