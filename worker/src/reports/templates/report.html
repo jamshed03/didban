@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Didban — Lauf {{runId}}</title>
+        <style>
+            {{{styles}}}
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Didban</h1>
+            <p class="meta">Lauf vom {{startedAt}} &middot; Quelle: {{sourceType}} ({{sourceOrigin}})</p>
+            <ul class="summary">
+                <li class="s-total">
+                    <strong>{{total}}</strong>
+                    geprüft
+                </li>
+                <li class="s-new">
+                    <strong>{{new}}</strong>
+                    neu
+                </li>
+                <li class="s-changed">
+                    <strong>{{changed}}</strong>
+                    geändert
+                </li>
+                <li class="s-unchanged">
+                    <strong>{{unchanged}}</strong>
+                    unverändert
+                </li>
+                <li class="s-broken">
+                    <strong>{{broken}}</strong>
+                    defekt
+                </li>
+            </ul>
+        </header>
+        <main>{{{results}}}</main>
+        <footer>Erzeugt von Didban &middot; Schema {{schemaVersion}}</footer>
+    </body>
+</html>
+
+<!-- Bausteine der Seite. Sie werden beim Erzeugen herausgelöst. -->
+
+<template id="result">
+    <section class="result {{statusClass}}">
+        <h2>
+            <span class="badge {{statusClass}}">{{status}}</span>
+            <a href="{{url}}" rel="noreferrer noopener">{{url}}</a>
+        </h2>
+        <p class="meta">{{meta}}</p>
+        {{{error}}} {{{patch}}} {{{images}}}
+    </section>
+</template>
+
+<template id="error">
+    <p class="error">{{error}}</p>
+</template>
+
+<template id="patch">
+    <details open>
+        <summary>Textänderung</summary>
+        <pre class="patch">{{{lines}}}</pre>
+        {{{truncated}}}
+    </details>
+</template>
+
+<template id="truncated">
+    <p class="meta">… {{count}} weitere Zeilen, vollständig in report.json</p>
+</template>
+
+<template id="images">
+    <div class="images">{{{figures}}}</div>
+</template>
+
+<template id="figure">
+    <figure>
+        <a href="{{src}}"><img src="{{src}}" alt="{{caption}}" loading="lazy" /></a>
+        <figcaption>{{caption}}</figcaption>
+    </figure>
+</template>

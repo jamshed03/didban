@@ -1,28 +1,29 @@
 {
-  "name": "didban-worker",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Didban — Crawl-/Diff-Kern (framework-agnostisch, CLI)",
-  "type": "module",
-  "engines": {
-    "node": ">=22"
-  },
-  "scripts": {
-    "build": "tsc",
-    "check": "tsx src/index.ts",
-    "dev": "tsx watch src/index.ts",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "diff": "^9.0.0",
-    "pixelmatch": "^7.2.0",
-    "playwright": "^1.63.0",
-    "pngjs": "^7.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^22.20.2",
-    "@types/pngjs": "^6.0.5",
-    "tsx": "^4.23.13",
-    "typescript": "^7.0.2"
-  }
+    "name": "didban-worker",
+    "version": "0.1.0",
+    "private": true,
+    "description": "Didban — Crawl-/Diff-Kern (framework-agnostisch, CLI)",
+    "type": "module",
+    "engines": {
+        "node": ">=22"
+    },
+    "scripts": {
+        "build": "tsc && npm run copy:templates",
+        "copy:templates": "cp -R src/reports/templates dist/reports/templates",
+        "check": "tsx src/index.ts",
+        "dev": "tsx watch src/index.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "diff": "^9.0.0",
+        "pixelmatch": "^7.2.0",
+        "playwright": "^1.63.0",
+        "pngjs": "^7.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.20.2",
+        "@types/pngjs": "^6.0.5",
+        "tsx": "^4.23.13",
+        "typescript": "^7.0.2"
+    }
 }
